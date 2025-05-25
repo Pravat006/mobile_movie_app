@@ -1,32 +1,57 @@
+import axios from 'axios'; // Import axios
+import Constants from "expo-constants";
+
 // Configuration object for The Movie Database (TMDB) API
 export const TMDB_CONFIG = {
-    BASE_URL: process.env.TMDB_BASE_URL,      // Base URL for TMDB API, loaded from environment variable
-    API_KEY: process.env.TMDB_API_KEY,        // API key for TMDB, loaded from environment variable
+    BASE_URL:"https://api.themoviedb.org/3",
     headers: {
-        accept: "application/json",           // Accept JSON responses
-        Authorization: `Bearer ${process.env.TMDB_ACCESS_TOKEN}` // Bearer token for authorization, from env
+        accept: "application/json",
+        Authorization: `Bearer ${Constants.expoConfig?.extra?.TMDB_ACCESS_TOKEN}`,
+    },
+};
+// console.log("Authorization:", TMDB_CONFIG.headers.Authorization.toString());
+// console.log("Base URL:", TMDB_CONFIG.BASE_URL);
+export const fetchMovies = async ({
+    query,
+}: {
+    query: string;
+}): Promise<Movie[]> => {
+    console.log("ANDROID DEBUG (Axios): fetchMovies called with query:", query);
+
+    const endpoint = query
+    ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+    : `${TMDB_CONFIG.BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
+    
+    console.log("ANDROID DEBUG (Axios): Endpoint constructed:", endpoint);
+
+    const headersToSend = {
+        accept: "application/json",
+        Authorization: `Bearer ${Constants.expoConfig?.extra?.TMDB_ACCESS_TOKEN}`,
+        "Content-Type": "application/json", // Often not needed for GET with axios, but doesn't hurt
+        "User-Agent": "MovieApp/1.0 (Android)",
+    };
+
+
+    try {
+        const response = await axios.get(endpoint, {
+            headers: headersToSend,
+            timeout: 60000 // Increase to 60 seconds for testing
+        });
+        // Axios puts the data directly in response.data
+        return response.data.results ?? []; 
+    } catch (error: any) { // Catch block for axios errors
+        console.error("ANDROID DEBUG (Axios): fetchMovies CATCH block error for TMDB:");
+        if (axios.isAxiosError(error)) {
+            console.error("   Axios error message:", error.message);
+            if (error.response) {
+                console.error("   Axios error response data:", JSON.stringify(error.response.data));
+                console.error("   Axios error response status:", error.response.status);;
+            } else if (error.request) {
+                console.error("   Axios error: No response received, request was made:", error.request);
+            }
+        } else {
+            console.error("   Non-Axios error:", error);
+        }
+        throw error; // Re-throw for React Query to handle
     }
-}
-
-// Function to fetch movies from TMDB API, either by search query or by popularity
-export const fetchMovies = async ({ query }: { query: string }) => {
-    // Determine endpoint: search if query is provided, otherwise discover popular movies
-    const endpoint = query 
-        ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
-        : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc`;
-
-    // Make the API request
-    const response = await fetch(endpoint, {
-        method: 'GET',
-        headers: TMDB_CONFIG.headers,
-    })
-
-    // Throw error if response is not received
-    if (!response) {
-        throw new Error("failed to fetch movies: ", response)
-    }
-
-    // Parse the JSON response and return the movie results
-    const data = await response.json();
-    return data.results;
-}
+};
