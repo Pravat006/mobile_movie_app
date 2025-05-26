@@ -12,7 +12,7 @@ export default function Index() {
 
   const { data: movies = [], isLoading: moviesLoading, error: moviesError } = useQuery({
     queryKey: ['movies'],
-    queryFn: () => fetchMovies({ query: "avengers" }),
+    queryFn: () => fetchMovies({ query: "" }),
   });
 
 
@@ -42,7 +42,7 @@ export default function Index() {
           </>
         }
         renderItem={({ item }) => (
-          <MovieCard 
+          <MovieCard
             {...item}
           />
         )}
@@ -53,9 +53,9 @@ export default function Index() {
           gap: 10, // Example gap between items in a row
           // Add other styles for the row if needed
         }}
-        contentContainerStyle={{ 
-            paddingHorizontal: 10, // Example padding for the whole list
-            paddingBottom: 10 
+        contentContainerStyle={{
+          paddingHorizontal: 10, // Example padding for the whole list
+          paddingBottom: 10
         }}
       />
     </View>
