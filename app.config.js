@@ -42,7 +42,11 @@ export default {
         },
         extra: {
             TMDB_BASE_URL: process.env.TMDB_BASE_URL,
-            TMDB_ACCESS_TOKEN: process.env.TMDB_ACCESS_TOKEN
+            TMDB_ACCESS_TOKEN: process.env.TMDB_ACCESS_TOKEN,
+            APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID,
+            APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT,
+            APPWRITE_DATABASE_ID:process.env.APPWRITE_DATABASE_ID,
+            APPWRITE_DB_COLLECTION_ID:process.env.APPWRITE_DB_COLLECTION_ID
         }
     }
 };

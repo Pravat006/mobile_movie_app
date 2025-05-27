@@ -16,6 +16,7 @@ interface Movie {
 }
 
 interface TrendingMovie {
+  id: any;
   searchTerm: string;
   movie_id: number;
   title: string;

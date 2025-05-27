@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Imp
 import { Stack } from "expo-router"; // Import Stack navigator from expo-router
 import React from "react";
 import "./global.css"; // Import global CSS styles
+import { StatusBar } from "react-native";
 
 const queryClient = new QueryClient(); // Create a QueryClient instance
 
@@ -10,6 +11,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <Stack>
+        <StatusBar hidden={true} />
         {/* Main tab navigator, hides the header for all tab screens */}
         <Stack.Screen 
           name="(tabs)" 

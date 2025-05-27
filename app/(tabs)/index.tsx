@@ -1,8 +1,10 @@
 import MovieCard from "@/components/MovieCard";
+import PopularMovies from "@/components/PopularMovies";
 import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovies } from "@/services/api";
+import { getTrendingMovies } from "@/services/appwrite";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
@@ -16,6 +18,15 @@ export default function Index() {
   });
 
 
+  const { data: trendingMovies = [],
+    isLoading: trendingMoviesLoading,
+    error: trendingMoviesError } = useQuery({
+      queryKey: ['trendingMovies'],
+      queryFn: () => getTrendingMovies(),
+    });
+
+  console.log("popular movies : ", trendingMovies);
+
   return (
     <View className="flex-1 bg-primary">
       <Image source={images.bg} className="absolute w-full z-0" />
@@ -28,16 +39,38 @@ export default function Index() {
               onPress={() => router.push("/search")}
               placeholder="Search for a Movie"
             />
+            {
+              trendingMovies.length > 0 && (
+                <View className="mt-10">
+                  <Text className="text-lg text-white font-bold mb-3">Popular Movies</Text>
+                </View>
+              )
+            }
+            <FlatList
+              className="mb-4 mt-3"
+              data={trendingMovies}
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              ItemSeparatorComponent={() => <View className="w-4" />}
+              renderItem={({ item, index }) => (
+              <PopularMovies 
+                {...item}
+                index={index}
+              />
+              )}
+            />
             <Text className="text-lg text-white font-bold mt-5 mb-3">Latest Movies </Text>
-            {moviesLoading && (
+
+
+            {(moviesLoading || trendingMoviesLoading) && (
               <ActivityIndicator
                 size="large"
                 color="#0000ff"
                 className="mt-10 self-center"
               />
             )}
-            {moviesError && (
-              <Text className="text-white">Error: {moviesError?.message}</Text>
+            {(moviesError || trendingMoviesError) && (
+              <Text className="text-white">Error: {moviesError?.message || trendingMoviesError?.message}</Text>
             )}
           </>
         }

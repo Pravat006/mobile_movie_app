@@ -16,13 +16,11 @@ export const fetchMovies = async ({
 }: {
     query: string;
 }): Promise<Movie[]> => {
-    console.log("ANDROID DEBUG (Axios): fetchMovies called with query:", query);
 
     const endpoint = query
     ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
     : `${TMDB_CONFIG.BASE_URL}/discover/movie?include_adult=true&page=1&sort_by=popularity.desc`;
     
-    console.log("ANDROID DEBUG (Axios): Endpoint constructed:", endpoint);
 
     const headersToSend = {
         accept: "application/json",
